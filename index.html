@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        h1 {
+            color: #2d3436;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: #74b9ff;
+        }
+
+        button {
+            background: #00b894;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: #00a085;
+        }
+
+        .weather-info {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .temperature {
+            font-size: 48px;
+            font-weight: bold;
+            color: #e17055;
+            margin: 20px 0;
+        }
+
+        .city-name {
+            font-size: 24px;
+            color: #636e72;
+            margin-bottom: 15px;
+        }
+
+        .rain-prediction {
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .rain-likely {
+            background: #74b9ff;
+            color: white;
+        }
+
+        .rain-unlikely {
+            background: #55a3ff;
+            color: white;
+        }
+
+        .weather-description {
+            font-size: 18px;
+            color: #636e72;
+            margin: 15px 0;
+            text-transform: capitalize;
+        }
+
+        .error {
+            color: #d63031;
+            margin-top: 20px;
+            padding: 15px;
+            background: #ffe0e0;
+            border-radius: 10px;
+        }
+
+        .loading {
+            color: #74b9ff;
+            margin-top: 20px;
+        }
+
+        .weather-icon {
+            font-size: 60px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌤️ Weather App</h1>
+        
+        <div class="input-group">
+            <input type="text" id="cityInput" placeholder="Enter city name (e.g., Mumbai, Delhi)" />
+            <button onclick="getWeather()">Get Weather</button>
+        </div>
+
+        <div id="loading" class="loading" style="display: none;">
+            Loading weather data...
+        </div>
+
+        <div id="error" class="error" style="display: none;"></div>
+
+        <div id="weatherInfo" class="weather-info">
+            <div class="city-name" id="cityName"></div>
+            <div class="weather-icon" id="weatherIcon"></div>
+            <div class="temperature" id="temperature"></div>
+            <div class="weather-description" id="description"></div>
+            <div id="rainPrediction" class="rain-prediction"></div>
+        </div>
+    </div>
+
+    <script>
+        // Your OpenWeatherMap API key
+        const API_KEY = 'e637995b1864f2a65c30653b005d38c3';
+        
+        function getWeather() {
+            const city = document.getElementById('cityInput').value.trim();
+            
+            if (!city) {
+                showError('Please enter a city name!');
+                return;
+            }
+
+            if (API_KEY === 'PASTE_YOUR_ACTUAL_API_KEY_HERE') {
+                showError('Please add your OpenWeatherMap API key to the code!');
+                return;
+            }
+
+            // Show loading
+            showLoading();
+            hideError();
+            hideWeatherInfo();
+
+            // API URL for current weather
+            const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`;
+
+            // Make API call
+            console.log('API URL:', url); // Debug: see the URL being called
+            
+            fetch(url)
+                .then(response => {
+                    console.log('Response status:', response.status); // Debug: see response status
+                    if (!response.ok) {
+                        throw new Error(`City not found! (Status: ${response.status})`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Weather data:', data); // Debug: see the actual data
+                    displayWeather(data);
+                    hideLoading();
+                })
+                .catch(error => {
+                    console.error('Error:', error); // Debug: see the full error
+                    showError(error.message);
+                    hideLoading();
+                });
+        }
+
+        function displayWeather(data) {
+            const cityName = `${data.name}, ${data.sys.country}`;
+            const temperature = Math.round(data.main.temp);
+            const description = data.weather[0].description;
+            const weatherMain = data.weather[0].main.toLowerCase();
+            const humidity = data.main.humidity;
+            const clouds = data.clouds.all;
+
+            // Update DOM elements
+            document.getElementById('cityName').textContent = cityName;
+            document.getElementById('temperature').textContent = `${temperature}°C`;
+            document.getElementById('description').textContent = description;
+
+            // Weather icon based on condition
+            const iconElement = document.getElementById('weatherIcon');
+            if (weatherMain.includes('rain')) {
+                iconElement.textContent = '🌧️';
+            } else if (weatherMain.includes('cloud')) {
+                iconElement.textContent = '☁️';
+            } else if (weatherMain.includes('clear')) {
+                iconElement.textContent = '☀️';
+            } else if (weatherMain.includes('snow')) {
+                iconElement.textContent = '❄️';
+            } else {
+                iconElement.textContent = '🌤️';
+            }
+
+            // Rain prediction logic
+            predictRain(weatherMain, humidity, clouds);
+            
+            // Show weather info
+            showWeatherInfo();
+        }
+
+        function predictRain(weatherMain, humidity, clouds) {
+            const rainElement = document.getElementById('rainPrediction');
+            
+            let rainChance = false;
+            let message = '';
+
+            // Simple rain prediction algorithm
+            if (weatherMain.includes('rain') || weatherMain.includes('drizzle')) {
+                rainChance = true;
+                message = '🌧️ It\'s already raining!';
+            } else if (humidity > 80 && clouds > 70) {
+                rainChance = true;
+                message = '🌧️ High chance of rain! (High humidity + cloudy)';
+            } else if (humidity > 70 && clouds > 60) {
+                rainChance = true;
+                message = '🌦️ Moderate chance of rain';
+            } else if (weatherMain.includes('cloud') && humidity > 60) {
+                rainChance = true;
+                message = '🌦️ Possible light rain';
+            } else {
+                rainChance = false;
+                message = '☀️ Low chance of rain today';
+            }
+
+            rainElement.textContent = message;
+            rainElement.className = rainChance ? 'rain-prediction rain-likely' : 'rain-prediction rain-unlikely';
+        }
+
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        function showError(message) {
+            const errorElement = document.getElementById('error');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+
+        function hideError() {
+            document.getElementById('error').style.display = 'none';
+        }
+
+        function showWeatherInfo() {
+            document.getElementById('weatherInfo').style.display = 'block';
+        }
+
+        function hideWeatherInfo() {
+            document.getElementById('weatherInfo').style.display = 'none';
+        }
+
+        // Allow pressing Enter to search
+        document.getElementById('cityInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                getWeather();
+            }
+        });
+    </script>
+</body>
+</html>
