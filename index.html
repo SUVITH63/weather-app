@@ -159,7 +159,7 @@
     </div>
 
     <script>
-        // Your OpenWeatherMap API key
+       
         const API_KEY = 'e637995b1864f2a65c30653b005d38c3';
         
         function getWeather() {
@@ -175,32 +175,31 @@
                 return;
             }
 
-            // Show loading
             showLoading();
             hideError();
             hideWeatherInfo();
 
-            // API URL for current weather
+           
             const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`;
 
-            // Make API call
-            console.log('API URL:', url); // Debug: see the URL being called
+          
+            console.log('API URL:', url); 
             
             fetch(url)
                 .then(response => {
-                    console.log('Response status:', response.status); // Debug: see response status
+                    console.log('Response status:', response.status); 
                     if (!response.ok) {
                         throw new Error(`City not found! (Status: ${response.status})`);
                     }
                     return response.json();
                 })
                 .then(data => {
-                    console.log('Weather data:', data); // Debug: see the actual data
+                    console.log('Weather data:', data);
                     displayWeather(data);
                     hideLoading();
                 })
                 .catch(error => {
-                    console.error('Error:', error); // Debug: see the full error
+                    console.error('Error:', error); 
                     showError(error.message);
                     hideLoading();
                 });
@@ -214,12 +213,12 @@
             const humidity = data.main.humidity;
             const clouds = data.clouds.all;
 
-            // Update DOM elements
+           
             document.getElementById('cityName').textContent = cityName;
             document.getElementById('temperature').textContent = `${temperature}°C`;
             document.getElementById('description').textContent = description;
 
-            // Weather icon based on condition
+           
             const iconElement = document.getElementById('weatherIcon');
             if (weatherMain.includes('rain')) {
                 iconElement.textContent = '🌧️';
@@ -233,10 +232,10 @@
                 iconElement.textContent = '🌤️';
             }
 
-            // Rain prediction logic
+            
             predictRain(weatherMain, humidity, clouds);
             
-            // Show weather info
+          
             showWeatherInfo();
         }
 
@@ -246,7 +245,6 @@
             let rainChance = false;
             let message = '';
 
-            // Simple rain prediction algorithm
             if (weatherMain.includes('rain') || weatherMain.includes('drizzle')) {
                 rainChance = true;
                 message = '🌧️ It\'s already raining!';
@@ -294,7 +292,7 @@
             document.getElementById('weatherInfo').style.display = 'none';
         }
 
-        // Allow pressing Enter to search
+        
         document.getElementById('cityInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 getWeather();
@@ -302,4 +300,5 @@
         });
     </script>
 </body>
+
 </html>
