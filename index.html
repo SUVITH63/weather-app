@@ -128,9 +128,32 @@
             margin-top: 20px;
         }
 
-        .weather-icon {
-            font-size: 60px;
-            margin: 20px 0;
+        .school-holiday {
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            border-left: 5px solid;
+        }
+
+        .holiday-likely {
+            background: #ff7675;
+            color: white;
+            border-left-color: #d63031;
+        }
+
+        .holiday-unlikely {
+            background: #00b894;
+            color: white;
+            border-left-color: #00a085;
+        }
+
+        .holiday-check {
+            background: #fdcb6e;
+            color: #2d3436;
+            border-left-color: #e17055;
         }
     </style>
 </head>
@@ -155,12 +178,13 @@
             <div class="temperature" id="temperature"></div>
             <div class="weather-description" id="description"></div>
             <div id="rainPrediction" class="rain-prediction"></div>
+            <div id="schoolHoliday" class="school-holiday" style="display: none;"></div>
         </div>
     </div>
 
     <script>
-       
-        const API_KEY = 'e637995b1864f2a65c30653b005d38c3';
+        // Your OpenWeatherMap API key
+        const API_KEY = 'a60a1767aae3ae7a0a432d3c5075ab2a';
         
         function getWeather() {
             const city = document.getElementById('cityInput').value.trim();
@@ -175,31 +199,32 @@
                 return;
             }
 
+            // Show loading
             showLoading();
             hideError();
             hideWeatherInfo();
 
-           
+            // API URL for current weather
             const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`;
 
-          
-            console.log('API URL:', url); 
+            // Make API call
+            console.log('API URL:', url); // Debug: see the URL being called
             
             fetch(url)
                 .then(response => {
-                    console.log('Response status:', response.status); 
+                    console.log('Response status:', response.status); // Debug: see response status
                     if (!response.ok) {
                         throw new Error(`City not found! (Status: ${response.status})`);
                     }
                     return response.json();
                 })
                 .then(data => {
-                    console.log('Weather data:', data);
+                    console.log('Weather data:', data); // Debug: see the actual data
                     displayWeather(data);
                     hideLoading();
                 })
                 .catch(error => {
-                    console.error('Error:', error); 
+                    console.error('Error:', error); // Debug: see the full error
                     showError(error.message);
                     hideLoading();
                 });
@@ -213,12 +238,12 @@
             const humidity = data.main.humidity;
             const clouds = data.clouds.all;
 
-           
+            // Update DOM elements
             document.getElementById('cityName').textContent = cityName;
             document.getElementById('temperature').textContent = `${temperature}°C`;
             document.getElementById('description').textContent = description;
 
-           
+            // Weather icon based on condition
             const iconElement = document.getElementById('weatherIcon');
             if (weatherMain.includes('rain')) {
                 iconElement.textContent = '🌧️';
@@ -232,10 +257,13 @@
                 iconElement.textContent = '🌤️';
             }
 
-            
+            // Rain prediction logic
             predictRain(weatherMain, humidity, clouds);
             
-          
+            // School holiday prediction
+            predictSchoolHoliday(weatherMain, humidity, clouds, data.wind?.speed || 0, temperature);
+            
+            // Show weather info
             showWeatherInfo();
         }
 
@@ -245,6 +273,7 @@
             let rainChance = false;
             let message = '';
 
+            // Simple rain prediction algorithm
             if (weatherMain.includes('rain') || weatherMain.includes('drizzle')) {
                 rainChance = true;
                 message = '🌧️ It\'s already raining!';
@@ -284,15 +313,65 @@
             document.getElementById('error').style.display = 'none';
         }
 
-        function showWeatherInfo() {
-            document.getElementById('weatherInfo').style.display = 'block';
+        function predictSchoolHoliday(weatherMain, humidity, clouds, windSpeed, temperature) {
+            const holidayElement = document.getElementById('schoolHoliday');
+            
+            let holidayStatus = 'unlikely';
+            let message = '';
+            let className = '';
+
+            // School holiday prediction algorithm for Indian conditions
+            if (weatherMain.includes('thunderstorm')) {
+                holidayStatus = 'likely';
+                message = '🚨 HIGH ALERT: Thunderstorm conditions! Schools likely to declare holiday.';
+                className = 'school-holiday holiday-likely';
+            } else if (weatherMain.includes('rain') && (humidity > 85 || windSpeed > 10)) {
+                holidayStatus = 'likely';
+                message = '🌧️ HEAVY RAIN ALERT: High chance of school holiday declaration!';
+                className = 'school-holiday holiday-likely';
+            } else if (weatherMain.includes('rain') && humidity > 75 && clouds > 80) {
+                holidayStatus = 'check';
+                message = '⚠️ MODERATE RAIN: Check local DC/education dept. announcements!';
+                className = 'school-holiday holiday-check';
+            } else if (humidity > 90 && clouds > 85) {
+                holidayStatus = 'check';
+                message = '🌦️ HEAVY CLOUD COVER: Monitor weather updates for possible holidays.';
+                className = 'school-holiday holiday-check';
+            } else if (temperature > 40) {
+                holidayStatus = 'check';
+                message = '🌡️ EXTREME HEAT: Possible heat wave holiday declaration.';
+                className = 'school-holiday holiday-check';
+            } else {
+                holidayStatus = 'unlikely';
+                message = '✅ NORMAL CONDITIONS: Schools likely to remain open.';
+                className = 'school-holiday holiday-unlikely';
+            }
+
+            // Add helpful tips
+            let tips = '';
+            if (holidayStatus === 'likely' || holidayStatus === 'check') {
+                tips = '<br><small>💡 Tip: Check local DC office website, school WhatsApp groups, or local news for official announcements.</small>';
+            }
+
+            holidayElement.innerHTML = `
+                <div style="margin-bottom: 10px;">📚 SCHOOL HOLIDAY PREDICTION</div>
+                ${message}
+                ${tips}
+            `;
+            holidayElement.className = className;
+            holidayElement.style.display = 'block';
         }
 
         function hideWeatherInfo() {
             document.getElementById('weatherInfo').style.display = 'none';
+            document.getElementById('schoolHoliday').style.display = 'none';
         }
 
-        
+        function showWeatherInfo() {
+            document.getElementById('weatherInfo').style.display = 'block';
+        }
+
+        // Allow pressing Enter to search
         document.getElementById('cityInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 getWeather();
@@ -300,5 +379,4 @@
         });
     </script>
 </body>
-
 </html>
