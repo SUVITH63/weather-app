@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weather App</title>
+    <title>Karnataka Weather & School Holiday Predictor</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        
         * {
             margin: 0;
             padding: 0;
@@ -12,99 +14,295 @@
         }
 
         body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             color: #333;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .cloud {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50px;
+            animation: float 20s infinite linear;
+        }
+
+        .cloud:before {
+            content: '';
+            position: absolute;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50px;
+        }
+
+        .cloud1 {
+            width: 80px;
+            height: 40px;
+            top: 20%;
+            animation-duration: 25s;
+        }
+
+        .cloud1:before {
+            width: 40px;
+            height: 40px;
+            top: -20px;
+            left: 10px;
+        }
+
+        .cloud2 {
+            width: 60px;
+            height: 30px;
+            top: 60%;
+            animation-duration: 30s;
+            animation-delay: -10s;
+        }
+
+        .cloud2:before {
+            width: 30px;
+            height: 30px;
+            top: -15px;
+            left: 15px;
+        }
+
+        @keyframes float {
+            0% { transform: translateX(-100px); }
+            100% { transform: translateX(calc(100vw + 100px)); }
         }
 
         .container {
-            background: white;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
             padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            border-radius: 25px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
             text-align: center;
-            max-width: 400px;
+            max-width: 500px;
             width: 90%;
+            position: relative;
+            z-index: 10;
+            animation: slideIn 1s ease-out;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes slideIn {
+            from { 
+                transform: translateY(50px); 
+                opacity: 0; 
+            }
+            to { 
+                transform: translateY(0); 
+                opacity: 1; 
+            }
         }
 
         h1 {
             color: #2d3436;
-            margin-bottom: 30px;
+            margin-bottom: 10px;
             font-size: 28px;
+            font-weight: 700;
+            animation: bounce 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes bounce {
+            0% { transform: translateY(0px); }
+            100% { transform: translateY(-5px); }
+        }
+
+        .subtitle {
+            color: #636e72;
+            margin-bottom: 30px;
+            font-size: 14px;
+            font-weight: 300;
         }
 
         .input-group {
             margin-bottom: 25px;
         }
 
+        .district-selector {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 15px;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+            background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+            margin-bottom: 15px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .district-selector:focus {
+            border-color: #74b9ff;
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(116, 185, 255, 0.3);
+        }
+
         input[type="text"] {
             width: 100%;
             padding: 15px;
             border: 2px solid #ddd;
-            border-radius: 10px;
+            border-radius: 15px;
             font-size: 16px;
             outline: none;
-            transition: border-color 0.3s;
+            transition: all 0.3s ease;
+            background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+            font-family: 'Poppins', sans-serif;
         }
 
         input[type="text"]:focus {
             border-color: #74b9ff;
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(116, 185, 255, 0.3);
         }
 
         button {
-            background: #00b894;
+            background: linear-gradient(45deg, #00b894, #00cec9);
             color: white;
             padding: 15px 30px;
             border: none;
-            border-radius: 10px;
+            border-radius: 15px;
             font-size: 16px;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: all 0.3s ease;
             width: 100%;
             margin-top: 10px;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            position: relative;
+            overflow: hidden;
         }
 
         button:hover {
-            background: #00a085;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 206, 201, 0.4);
+        }
+
+        button:active {
+            transform: translateY(-1px);
         }
 
         .weather-info {
             margin-top: 30px;
             display: none;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from { 
+                transform: translateY(30px); 
+                opacity: 0; 
+            }
+            to { 
+                transform: translateY(0); 
+                opacity: 1; 
+            }
         }
 
         .temperature {
             font-size: 48px;
             font-weight: bold;
-            color: #e17055;
+            background: linear-gradient(45deg, #e17055, #f39c12);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             margin: 20px 0;
+            animation: pulse 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.05); }
         }
 
         .city-name {
             font-size: 24px;
             color: #636e72;
             margin-bottom: 15px;
+            font-weight: 600;
         }
 
         .rain-prediction {
             padding: 20px;
-            border-radius: 10px;
+            border-radius: 15px;
             margin-top: 20px;
             font-size: 18px;
             font-weight: bold;
+            transition: all 0.3s ease;
+            animation: wiggle 3s ease-in-out infinite;
+        }
+
+        @keyframes wiggle {
+            0%, 7% { transform: rotateZ(0); }
+            15% { transform: rotateZ(-1deg); }
+            20% { transform: rotateZ(1deg); }
+            25% { transform: rotateZ(0); }
+            100% { transform: rotateZ(0); }
+        }
+
+        .school-holiday {
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            border-left: 5px solid;
+            animation: glow 2s ease-in-out infinite alternate;
+            transition: all 0.5s ease;
+        }
+
+        @keyframes glow {
+            0% { box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+            100% { box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        }
+
+        .holiday-likely {
+            background: linear-gradient(45deg, #ff7675, #fd79a8);
+            color: white;
+            border-left-color: #d63031;
+        }
+
+        .holiday-unlikely {
+            background: linear-gradient(45deg, #00b894, #00cec9);
+            color: white;
+            border-left-color: #00a085;
+        }
+
+        .holiday-check {
+            background: linear-gradient(45deg, #fdcb6e, #e17055);
+            color: #2d3436;
+            border-left-color: #e17055;
         }
 
         .rain-likely {
-            background: #74b9ff;
+            background: linear-gradient(45deg, #74b9ff, #0984e3);
             color: white;
         }
 
         .rain-unlikely {
-            background: #55a3ff;
+            background: linear-gradient(45deg, #55a3ff, #74b9ff);
             color: white;
         }
 
@@ -113,61 +311,172 @@
             color: #636e72;
             margin: 15px 0;
             text-transform: capitalize;
+            font-weight: 500;
         }
 
         .error {
             color: #d63031;
             margin-top: 20px;
             padding: 15px;
-            background: #ffe0e0;
-            border-radius: 10px;
+            background: linear-gradient(45deg, #ffe0e0, #ffcccb);
+            border-radius: 15px;
+            border-left: 4px solid #d63031;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
         }
 
         .loading {
             color: #74b9ff;
             margin-top: 20px;
+            font-size: 18px;
+            animation: spin 1s linear infinite;
         }
 
-        .school-holiday {
-            padding: 20px;
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .weather-icon {
+            font-size: 80px;
+            margin: 20px 0;
+            animation: iconFloat 3s ease-in-out infinite;
+            display: inline-block;
+        }
+
+        @keyframes iconFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .district-info {
+            background: rgba(116, 185, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #2d3436;
+            border-left: 4px solid #74b9ff;
+        }
+
+        .fun-facts {
+            background: rgba(253, 203, 110, 0.2);
+            padding: 15px;
             border-radius: 10px;
             margin-top: 20px;
-            font-size: 18px;
-            font-weight: bold;
-            text-align: center;
-            border-left: 5px solid;
+            font-size: 14px;
+            color: #2d3436;
+            border-left: 4px solid #fdcb6e;
+            animation: fadeIn 2s ease-in;
         }
 
-        .holiday-likely {
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        .interactive-tip {
+            position: absolute;
+            top: -15px;
+            right: -15px;
             background: #ff7675;
             color: white;
-            border-left-color: #d63031;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            animation: heartbeat 1.5s ease-in-out infinite;
+            cursor: pointer;
         }
 
-        .holiday-unlikely {
-            background: #00b894;
-            color: white;
-            border-left-color: #00a085;
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
 
-        .holiday-check {
-            background: #fdcb6e;
-            color: #2d3436;
-            border-left-color: #e17055;
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+                margin: 10px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .temperature {
+                font-size: 36px;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="floating-elements">
+        <div class="cloud cloud1"></div>
+        <div class="cloud cloud2"></div>
+    </div>
+
     <div class="container">
-        <h1>🌤️ Weather App</h1>
+        <div class="interactive-tip" onclick="showFunFact()" title="Click for fun weather facts!">💡</div>
+        
+        <h1>🌤️ Karnataka Weather Hub</h1>
+        <p class="subtitle">Weather Updates & School Holiday Predictions for Karnataka Districts</p>
+        
+        <div class="district-info" id="districtInfo" style="display: none;">
+            <strong>📍 Selected District:</strong> <span id="selectedDistrict"></span><br>
+            <small>💡 This app provides weather-based holiday predictions. Always check official DC announcements!</small>
+        </div>
         
         <div class="input-group">
-            <input type="text" id="cityInput" placeholder="Enter city name (e.g., Mumbai, Delhi)" />
-            <button onclick="getWeather()">Get Weather</button>
+            <select class="district-selector" id="districtSelector" onchange="selectDistrict()">
+                <option value="">🏛️ Select Karnataka District</option>
+                <option value="Mysuru,IN">🏰 Mysuru (Mysore)</option>
+                <option value="Bengaluru,IN">🏙️ Bengaluru (Bangalore)</option>
+                <option value="Hubballi,IN">🌾 Hubballi-Dharwad</option>
+                <option value="Mangaluru,IN">🏖️ Dakshina Kannada (Mangalore)</option>
+                <option value="Belagavi,IN">⛰️ Belagavi (Belgaum)</option>
+                <option value="Kalaburagi,IN">🌾 Kalaburagi (Gulbarga)</option>
+                <option value="Davanagere,IN">🌾 Davanagere</option>
+                <option value="Ballari,IN">⛰️ Ballari (Bellary)</option>
+                <option value="Bijapur,IN">🏛️ Vijayapura (Bijapur)</option>
+                <option value="Shimoga,IN">🌿 Shivamogga (Shimoga)</option>
+                <option value="Tumkur,IN">🌾 Tumakuru (Tumkur)</option>
+                <option value="Raichur,IN">🌾 Raichur</option>
+                <option value="Hassan,IN">🏛️ Hassan</option>
+                <option value="Mandya,IN">🌾 Mandya</option>
+                <option value="Udupi,IN">🏖️ Udupi</option>
+                <option value="Chikmagalur,IN">☕ Chikkamagaluru</option>
+                <option value="Chitradurga,IN">⛰️ Chitradurga</option>
+                <option value="Kolar,IN">⛰️ Kolar</option>
+                <option value="Bagalkot,IN">🏛️ Bagalkot</option>
+                <option value="Haveri,IN">🌾 Haveri</option>
+                <option value="Gadag,IN">🌾 Gadag</option>
+                <option value="Koppal,IN">🌾 Koppal</option>
+                <option value="Yadgir,IN">🌾 Yadgir</option>
+                <option value="Chamarajanagar,IN">🐘 Chamarajanagar</option>
+                <option value="Chikkaballapur,IN">⛰️ Chikkaballapur</option>
+                <option value="Kodagu,IN">☕ Kodagu (Coorg)</option>
+                <option value="Ramanagara,IN">🌾 Ramanagara</option>
+                <option value="Bidar,IN">🏛️ Bidar</option>
+                <option value="Dharwad,IN">🌾 Dharwad</option>
+                <option value="Uttara Kannada,IN">🌿 Uttara Kannada (Karwar)</option>
+            </select>
+            
+            <input type="text" id="cityInput" placeholder="✨ Or enter any city name (e.g., Mumbai, Delhi)" />
+            <button onclick="getWeather()">🌤️ Get Weather & Holiday Info</button>
         </div>
 
         <div id="loading" class="loading" style="display: none;">
-            Loading weather data...
+            🌀 Loading magical weather data...
         </div>
 
         <div id="error" class="error" style="display: none;"></div>
@@ -180,26 +489,83 @@
             <div id="rainPrediction" class="rain-prediction"></div>
             <div id="schoolHoliday" class="school-holiday" style="display: none;"></div>
         </div>
+
+        <div id="funFacts" class="fun-facts" style="display: none;">
+            <div id="factContent"></div>
+        </div>
     </div>
 
     <script>
         // Your OpenWeatherMap API key
         const API_KEY = 'a60a1767aae3ae7a0a432d3c5075ab2a';
         
+        const funFacts = [
+            "🌧️ Karnataka receives 75% of its rainfall during monsoon season (June-September)!",
+            "☕ Coorg (Kodagu) is called the 'Coffee Bowl of India' and has unique weather patterns!",
+            "🌡️ Bangalore is known as the 'Air Conditioned City' due to its pleasant climate!",
+            "🌊 Coastal Karnataka (Mangalore, Udupi) gets heavy rainfall - over 3000mm annually!",
+            "⛰️ Western Ghats in Karnataka create different climate zones within short distances!",
+            "🌾 North Karnataka is drier and faces more heat waves than South Karnataka!",
+            "🏞️ Mysore has a moderate climate throughout the year - perfect for palaces!",
+            "🌪️ Cyclones from Bay of Bengal can affect Karnataka's weather patterns!"
+        ];
+        
+        let currentFactIndex = 0;
+        
+        function selectDistrict() {
+            const selector = document.getElementById('districtSelector');
+            const districtInfo = document.getElementById('districtInfo');
+            const selectedDistrict = document.getElementById('selectedDistrict');
+            const cityInput = document.getElementById('cityInput');
+            
+            if (selector.value) {
+                const districtName = selector.options[selector.selectedIndex].text.replace(/^[🏰🏙️🌾🏖️⛰️🏛️🌿☕🐘]/g, '').trim();
+                selectedDistrict.textContent = districtName;
+                districtInfo.style.display = 'block';
+                cityInput.value = selector.value.split(',')[0];
+                
+                // Auto-search when district is selected
+                setTimeout(() => {
+                    getWeather();
+                }, 500);
+            } else {
+                districtInfo.style.display = 'none';
+                cityInput.value = '';
+            }
+        }
+        
+        function showFunFact() {
+            const funFactsDiv = document.getElementById('funFacts');
+            const factContent = document.getElementById('factContent');
+            
+            factContent.innerHTML = `
+                <strong>🎯 Fun Weather Fact:</strong><br>
+                ${funFacts[currentFactIndex]}
+            `;
+            
+            funFactsDiv.style.display = 'block';
+            currentFactIndex = (currentFactIndex + 1) % funFacts.length;
+            
+            // Hide after 5 seconds
+            setTimeout(() => {
+                funFactsDiv.style.display = 'none';
+            }, 5000);
+        }
+        
         function getWeather() {
             const city = document.getElementById('cityInput').value.trim();
             
             if (!city) {
-                showError('Please enter a city name!');
+                showError('Please select a district or enter a city name! 🏛️');
                 return;
             }
 
-            if (API_KEY === 'PASTE_YOUR_ACTUAL_API_KEY_HERE') {
+            if (API_KEY === 'e637995b1864f2a65c30653b005d38c3') {
                 showError('Please add your OpenWeatherMap API key to the code!');
                 return;
             }
 
-            // Show loading
+            // Show loading with fun message
             showLoading();
             hideError();
             hideWeatherInfo();
@@ -208,23 +574,23 @@
             const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`;
 
             // Make API call
-            console.log('API URL:', url); // Debug: see the URL being called
+            console.log('API URL:', url);
             
             fetch(url)
                 .then(response => {
-                    console.log('Response status:', response.status); // Debug: see response status
+                    console.log('Response status:', response.status);
                     if (!response.ok) {
-                        throw new Error(`City not found! (Status: ${response.status})`);
+                        throw new Error(`City not found! Try selecting from Karnataka districts 🏛️ (Status: ${response.status})`);
                     }
                     return response.json();
                 })
                 .then(data => {
-                    console.log('Weather data:', data); // Debug: see the actual data
+                    console.log('Weather data:', data);
                     displayWeather(data);
                     hideLoading();
                 })
                 .catch(error => {
-                    console.error('Error:', error); // Debug: see the full error
+                    console.error('Error:', error);
                     showError(error.message);
                     hideLoading();
                 });
@@ -243,16 +609,22 @@
             document.getElementById('temperature').textContent = `${temperature}°C`;
             document.getElementById('description').textContent = description;
 
-            // Weather icon based on condition
+            // Animated weather icons based on condition
             const iconElement = document.getElementById('weatherIcon');
             if (weatherMain.includes('rain')) {
                 iconElement.textContent = '🌧️';
+            } else if (weatherMain.includes('thunderstorm')) {
+                iconElement.textContent = '⛈️';
+            } else if (weatherMain.includes('drizzle')) {
+                iconElement.textContent = '🌦️';
             } else if (weatherMain.includes('cloud')) {
                 iconElement.textContent = '☁️';
             } else if (weatherMain.includes('clear')) {
                 iconElement.textContent = '☀️';
             } else if (weatherMain.includes('snow')) {
                 iconElement.textContent = '❄️';
+            } else if (weatherMain.includes('mist') || weatherMain.includes('fog')) {
+                iconElement.textContent = '🌫️';
             } else {
                 iconElement.textContent = '🌤️';
             }
@@ -260,8 +632,8 @@
             // Rain prediction logic
             predictRain(weatherMain, humidity, clouds);
             
-            // School holiday prediction
-            predictSchoolHoliday(weatherMain, humidity, clouds, data.wind?.speed || 0, temperature);
+            // School holiday prediction for Karnataka
+            predictKarnatakaSchoolHoliday(weatherMain, humidity, clouds, data.wind?.speed || 0, temperature, data.name);
             
             // Show weather info
             showWeatherInfo();
@@ -273,26 +645,130 @@
             let rainChance = false;
             let message = '';
 
-            // Simple rain prediction algorithm
-            if (weatherMain.includes('rain') || weatherMain.includes('drizzle')) {
+            // Enhanced rain prediction algorithm
+            if (weatherMain.includes('rain') || weatherMain.includes('drizzle') || weatherMain.includes('thunderstorm')) {
                 rainChance = true;
-                message = '🌧️ It\'s already raining!';
-            } else if (humidity > 80 && clouds > 70) {
+                if (weatherMain.includes('thunderstorm')) {
+                    message = '⛈️ Thunderstorm active! Heavy rain likely!';
+                } else if (weatherMain.includes('rain')) {
+                    message = '🌧️ It\'s raining! Stay safe indoors!';
+                } else {
+                    message = '🌦️ Light rain/drizzle in progress!';
+                }
+            } else if (humidity > 85 && clouds > 80) {
                 rainChance = true;
-                message = '🌧️ High chance of rain! (High humidity + cloudy)';
-            } else if (humidity > 70 && clouds > 60) {
+                message = '🌧️ Very high chance of rain! (Humidity: ' + humidity + '%, Clouds: ' + clouds + '%)';
+            } else if (humidity > 75 && clouds > 65) {
                 rainChance = true;
-                message = '🌦️ Moderate chance of rain';
-            } else if (weatherMain.includes('cloud') && humidity > 60) {
-                rainChance = true;
-                message = '🌦️ Possible light rain';
+                message = '🌦️ Good chance of rain later today!';
+            } else if (humidity > 65 && clouds > 50) {
+                rainChance = false;
+                message = '🌤️ Possible light showers, mostly cloudy';
             } else {
                 rainChance = false;
-                message = '☀️ Low chance of rain today';
+                message = '☀️ Low chance of rain today - enjoy the sunshine!';
             }
 
             rainElement.textContent = message;
             rainElement.className = rainChance ? 'rain-prediction rain-likely' : 'rain-prediction rain-unlikely';
+        }
+
+        function predictKarnatakaSchoolHoliday(weatherMain, humidity, clouds, windSpeed, temperature, cityName) {
+            const holidayElement = document.getElementById('schoolHoliday');
+            
+            let holidayStatus = 'unlikely';
+            let message = '';
+            let className = '';
+            
+            // Check if it's a Karnataka city for specific predictions
+            const karnatakaKeywords = ['mysuru', 'mysore', 'bengaluru', 'bangalore', 'hubballi', 'mangaluru', 'mangalore', 
+                                    'belagavi', 'belgaum', 'kalaburagi', 'gulbarga', 'davanagere', 'ballari', 'bellary',
+                                    'bijapur', 'vijayapura', 'shimoga', 'shivamogga', 'tumkur', 'tumakuru', 'raichur',
+                                    'hassan', 'mandya', 'udupi', 'chikmagalur', 'chikkamagaluru', 'chitradurga',
+                                    'kolar', 'bagalkot', 'haveri', 'gadag', 'koppal', 'yadgir', 'chamarajanagar',
+                                    'chikkaballapur', 'kodagu', 'coorg', 'ramanagara', 'bidar', 'dharwad'];
+            
+            const isKarnataka = karnatakaKeywords.some(keyword => 
+                cityName.toLowerCase().includes(keyword)
+            );
+
+            // Enhanced school holiday prediction algorithm for Karnataka
+            if (weatherMain.includes('thunderstorm')) {
+                holidayStatus = 'likely';
+                message = '🚨 THUNDERSTORM ALERT: Very high chance of school/college holiday declaration!';
+                className = 'school-holiday holiday-likely';
+            } else if (weatherMain.includes('rain') && (humidity > 85 || windSpeed > 12)) {
+                holidayStatus = 'likely';
+                message = '🌧️ HEAVY RAIN CONDITIONS: Schools likely to declare holiday for student safety!';
+                className = 'school-holiday holiday-likely';
+            } else if (weatherMain.includes('rain') && humidity > 80 && clouds > 85) {
+                holidayStatus = 'check';
+                message = '⚠️ CONTINUOUS RAIN EXPECTED: Monitor DC office and school announcements!';
+                className = 'school-holiday holiday-check';
+            } else if (humidity > 90 && clouds > 90) {
+                holidayStatus = 'check';
+                message = '🌫️ VERY HEAVY CLOUD COVER: Possible sudden heavy rain - stay alert!';
+                className = 'school-holiday holiday-check';
+            } else if (temperature > 42) {
+                holidayStatus = 'check';
+                message = '🌡️ EXTREME HEAT WARNING: Possible heat wave holiday declaration!';
+                className = 'school-holiday holiday-check';
+            } else if (temperature > 39 && humidity < 30) {
+                holidayStatus = 'check';
+                message = '☀️ HIGH TEMPERATURE: Monitor for heat wave advisories from education department!';
+                className = 'school-holiday holiday-check';
+            } else {
+                holidayStatus = 'unlikely';
+                message = '✅ NORMAL WEATHER CONDITIONS: Schools and colleges likely to remain open!';
+                className = 'school-holiday holiday-unlikely';
+            }
+
+            // Add Karnataka-specific information
+            let tips = '';
+            if (holidayStatus === 'likely' || holidayStatus === 'check') {
+                if (isKarnataka) {
+                    tips = `<br><small>📱 <strong>Karnataka Students:</strong> Check your District Collector's office website, school WhatsApp groups, local Kannada news channels (Suvarna News, Public TV), or Karnataka Education Dept. announcements!</small>`;
+                } else {
+                    tips = `<br><small>📱 <strong>Check:</strong> Local DC office website, school WhatsApp groups, local news channels, or state education department for official announcements!</small>`;
+                }
+            }
+            
+            // Add specific tips for popular Karnataka districts
+            if (isKarnataka) {
+                const districtTips = getDistrictSpecificTips(cityName.toLowerCase());
+                if (districtTips) {
+                    tips += `<br><small>🏛️ <strong>Local Tip:</strong> ${districtTips}</small>`;
+                }
+            }
+
+            holidayElement.innerHTML = `
+                <div style="margin-bottom: 10px;">📚 SCHOOL/COLLEGE HOLIDAY PREDICTION</div>
+                ${message}
+                ${tips}
+            `;
+            holidayElement.className = className;
+            holidayElement.style.display = 'block';
+        }
+        
+        function getDistrictSpecificTips(cityName) {
+            if (cityName.includes('mysuru') || cityName.includes('mysore')) {
+                return "Mysuru DC office usually announces by 7 AM. Check @MysuruDC Twitter!";
+            } else if (cityName.includes('bengaluru') || cityName.includes('bangalore')) {
+                return "BBMP and Education Dept. announce jointly. Check Prajavani, Deccan Herald for updates!";
+            } else if (cityName.includes('mangaluru') || cityName.includes('mangalore')) {
+                return "Coastal area - heavy rains common! DC Dakshina Kannada announces early morning!";
+            } else if (cityName.includes('hubballi') || cityName.includes('dharwad')) {
+                return "Twin cities - announcements cover both areas. Check local Vijaya Karnataka news!";
+            } else if (cityName.includes('belagavi') || cityName.includes('belgaum')) {
+                return "Border district - sometimes follows Maharashtra timings. Check both state announcements!";
+            } else if (cityName.includes('udupi')) {
+                return "Coastal district - monsoon holidays common! Very active DC social media presence!";
+            } else if (cityName.includes('kodagu') || cityName.includes('coorg')) {
+                return "Hill station - landslide alerts affect school closures. Coffee plantation area updates!";
+            } else if (cityName.includes('chikmagalur') || cityName.includes('chikkamagaluru')) {
+                return "Coffee land - rain patterns unique! Hill station weather affects valley schools too!";
+            }
+            return null;
         }
 
         function showLoading() {
@@ -305,7 +781,7 @@
 
         function showError(message) {
             const errorElement = document.getElementById('error');
-            errorElement.textContent = message;
+            errorElement.innerHTML = `🚫 ${message}`;
             errorElement.style.display = 'block';
         }
 
@@ -313,53 +789,8 @@
             document.getElementById('error').style.display = 'none';
         }
 
-        function predictSchoolHoliday(weatherMain, humidity, clouds, windSpeed, temperature) {
-            const holidayElement = document.getElementById('schoolHoliday');
-            
-            let holidayStatus = 'unlikely';
-            let message = '';
-            let className = '';
-
-            // School holiday prediction algorithm for Indian conditions
-            if (weatherMain.includes('thunderstorm')) {
-                holidayStatus = 'likely';
-                message = '🚨 HIGH ALERT: Thunderstorm conditions! Schools likely to declare holiday.';
-                className = 'school-holiday holiday-likely';
-            } else if (weatherMain.includes('rain') && (humidity > 85 || windSpeed > 10)) {
-                holidayStatus = 'likely';
-                message = '🌧️ HEAVY RAIN ALERT: High chance of school holiday declaration!';
-                className = 'school-holiday holiday-likely';
-            } else if (weatherMain.includes('rain') && humidity > 75 && clouds > 80) {
-                holidayStatus = 'check';
-                message = '⚠️ MODERATE RAIN: Check local DC/education dept. announcements!';
-                className = 'school-holiday holiday-check';
-            } else if (humidity > 90 && clouds > 85) {
-                holidayStatus = 'check';
-                message = '🌦️ HEAVY CLOUD COVER: Monitor weather updates for possible holidays.';
-                className = 'school-holiday holiday-check';
-            } else if (temperature > 40) {
-                holidayStatus = 'check';
-                message = '🌡️ EXTREME HEAT: Possible heat wave holiday declaration.';
-                className = 'school-holiday holiday-check';
-            } else {
-                holidayStatus = 'unlikely';
-                message = '✅ NORMAL CONDITIONS: Schools likely to remain open.';
-                className = 'school-holiday holiday-unlikely';
-            }
-
-            // Add helpful tips
-            let tips = '';
-            if (holidayStatus === 'likely' || holidayStatus === 'check') {
-                tips = '<br><small>💡 Tip: Check local DC office website, school WhatsApp groups, or local news for official announcements.</small>';
-            }
-
-            holidayElement.innerHTML = `
-                <div style="margin-bottom: 10px;">📚 SCHOOL HOLIDAY PREDICTION</div>
-                ${message}
-                ${tips}
-            `;
-            holidayElement.className = className;
-            holidayElement.style.display = 'block';
+        function showWeatherInfo() {
+            document.getElementById('weatherInfo').style.display = 'block';
         }
 
         function hideWeatherInfo() {
@@ -367,15 +798,46 @@
             document.getElementById('schoolHoliday').style.display = 'none';
         }
 
-        function showWeatherInfo() {
-            document.getElementById('weatherInfo').style.display = 'block';
-        }
-
         // Allow pressing Enter to search
         document.getElementById('cityInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 getWeather();
             }
+        });
+        
+        // Auto-show a fun fact when page loads
+        setTimeout(() => {
+            showFunFact();
+        }, 3000);
+        
+        // Easter egg: Double click on title for surprise
+        let clickCount = 0;
+        document.querySelector('h1').addEventListener('click', function() {
+            clickCount++;
+            if (clickCount === 2) {
+                this.style.animation = 'bounce 0.5s ease-in-out 3';
+                setTimeout(() => {
+                    this.style.animation = 'bounce 2s ease-in-out infinite alternate';
+                }, 1500);
+                clickCount = 0;
+            }
+            setTimeout(() => {
+                clickCount = 0;
+            }, 500);
+        });
+        
+        // Add some interactive elements
+        document.addEventListener('mousemove', function(e) {
+            const container = document.querySelector('.container');
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+            
+            container.style.transform = `perspective(1000px) rotateY(${(x - 0.5) * 5}deg) rotateX(${(y - 0.5) * -5}deg)`;
+        });
+        
+        document.addEventListener('mouseleave', function() {
+            const container = document.querySelector('.container');
+            container.style.transform = 'perspective(1000px) rotateY(0deg) rotateX(0deg)';
         });
     </script>
 </body>
