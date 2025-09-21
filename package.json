@@ -1,0 +1,30 @@
+{
+  "name": "karnataka-weather-hub",
+  "version": "1.0.0",
+  "description": "A beautiful weather application for Karnataka districts with school holiday predictions",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "serve": "npx serve ."
+  },
+  "keywords": [
+    "weather",
+    "karnataka",
+    "school-holiday",
+    "weather-app",
+    "openweathermap",
+    "india"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/karnataka-weather-hub.git"
+  },
+  "homepage": "https://yourusername.github.io/karnataka-weather-hub",
+  "bugs": {
+    "url": "https://github.com/yourusername/karnataka-weather-hub/issues"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

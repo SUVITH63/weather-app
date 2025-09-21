@@ -495,20 +495,16 @@
         </div>
     </div>
 
+    <!-- Load configuration first -->
+    <script src="config.js"></script>
+    
     <script>
-        // Your OpenWeatherMap API key
-        const API_KEY = 'ENETR YOUR API ID HERE';
+        // API key is now loaded from config.js
+        const API_KEY = CONFIG.OPENWEATHER_API_KEY;
+        const API_BASE_URL = CONFIG.API_BASE_URL;
+        const UNITS = CONFIG.UNITS;
         
-        const funFacts = [
-            "🌧️ Karnataka receives 75% of its rainfall during monsoon season (June-September)!",
-            "☕ Coorg (Kodagu) is called the 'Coffee Bowl of India' and has unique weather patterns!",
-            "🌡️ Bangalore is known as the 'Air Conditioned City' due to its pleasant climate!",
-            "🌊 Coastal Karnataka (Mangalore, Udupi) gets heavy rainfall - over 3000mm annually!",
-            "⛰️ Western Ghats in Karnataka create different climate zones within short distances!",
-            "🌾 North Karnataka is drier and faces more heat waves than South Karnataka!",
-            "🏞️ Mysore has a moderate climate throughout the year - perfect for palaces!",
-            "🌪️ Cyclones from Bay of Bengal can affect Karnataka's weather patterns!"
-        ];
+        const funFacts = CONFIG.FUN_FACTS;
         
         let currentFactIndex = 0;
         
@@ -527,7 +523,7 @@
                 // Auto-search when district is selected
                 setTimeout(() => {
                     getWeather();
-                }, 500);
+                }, CONFIG.AUTO_SEARCH_DELAY);
             } else {
                 districtInfo.style.display = 'none';
                 cityInput.value = '';
@@ -560,8 +556,8 @@
                 return;
             }
 
-            if (API_KEY === 'your api id') {
-                showError('Please add your OpenWeatherMap API key to the code!');
+            if (API_KEY === 'YOUR_API_KEY_HERE' || !API_KEY) {
+                showError('⚠️ Please update your API key in config.js file!');
                 return;
             }
 
@@ -571,7 +567,7 @@
             hideWeatherInfo();
 
             // API URL for current weather
-            const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`;
+            const url = `${API_BASE_URL}?q=${city}&appid=${API_KEY}&units=${UNITS}`;
 
             // Make API call
             console.log('API URL:', url);
